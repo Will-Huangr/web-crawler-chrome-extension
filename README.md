@@ -2,6 +2,8 @@
 
 一个完整的网页爬虫解决方案，包含浏览器插件前端和Python后端服务，可以快速爬取网页内容并分段展示。
 <img width="436" height="537" alt="image" src="https://github.com/user-attachments/assets/3f9c7b2f-cebc-46b1-9ff4-ad8b29a95da5" />
+<img width="460" height="593" alt="image" src="https://github.com/user-attachments/assets/d9ee9691-3b5f-4740-b0d3-ed034956bb79" />
+
 
 ## 🚀 功能特点
 
