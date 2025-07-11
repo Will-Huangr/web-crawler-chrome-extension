@@ -255,7 +255,7 @@ def ai_summary():
             f"{DEEPSEEK_BASE_URL}/chat/completions",
             headers=headers,
             json=payload,
-            timeout=30
+            timeout=60  # 增加AI摘要超时时间到60秒
         )
         
         if response.status_code == 200:
@@ -356,7 +356,7 @@ def seo_advice():
             f"{DEEPSEEK_BASE_URL}/chat/completions",
             headers=headers,
             json=payload,
-            timeout=30
+            timeout=90  # SEO建议使用reasoner模型，需要更长超时时间
         )
         
         if response.status_code == 200:

@@ -3,6 +3,9 @@
 // 服务器部署后改成：http://你的域名.com:5000
 const SERVER_URL = 'http://localhost:5000';
 
+// 全局变量存储当前内容，用于重试功能
+let currentContent = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     const urlInput = document.getElementById('urlInput');
     const crawlBtn = document.getElementById('crawlBtn');
@@ -106,14 +109,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const summaryStats = document.getElementById('summaryStats');
         const summaryText = document.getElementById('summaryText');
         
+        // 存储内容供重试使用
+        currentContent = content;
+        
         resultContent.innerHTML = '';
         summaryStats.innerHTML = '';
         summaryText.innerHTML = '';
+        
+        // 设置AI区域的加载状态
+        const aiSummaryContent = document.getElementById('aiSummaryContent');
+        const seoAdviceContent = document.getElementById('seoAdviceContent');
+        aiSummaryContent.innerHTML = '<div class="ai-loading">🤖 正在生成AI摘要...</div>';
+        seoAdviceContent.innerHTML = '<div class="ai-loading">🔍 正在生成SEO建议...</div>';
         
         if (!content || content.length === 0) {
             resultContent.innerHTML = '<p>未找到内容</p>';
             summaryStats.innerHTML = '<div class="stat-item"><div class="stat-number">0</div><div class="stat-label">总项目</div></div>';
             summaryText.innerHTML = '未找到任何内容';
+            aiSummaryContent.innerHTML = '<div class="ai-error">没有内容可以生成摘要</div>';
+            seoAdviceContent.innerHTML = '<div class="ai-error">没有内容可以生成SEO建议</div>';
             resultContainer.style.display = 'block';
             return;
         }
@@ -178,11 +192,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 aiSummaryContent.innerHTML = `<div>${data.summary}</div>`;
             } else {
-                aiSummaryContent.innerHTML = '<div class="ai-error">AI摘要生成失败</div>';
+                aiSummaryContent.innerHTML = `
+                    <div class="ai-error">
+                        <div>AI摘要生成失败</div>
+                        <button class="retry-btn" onclick="retryAISummary()">🔄 重试</button>
+                    </div>
+                `;
             }
         } catch (error) {
             console.error('AI摘要错误:', error);
-            aiSummaryContent.innerHTML = '<div class="ai-error">AI摘要服务暂时不可用</div>';
+            aiSummaryContent.innerHTML = `
+                <div class="ai-error">
+                    <div>AI摘要服务暂时不可用</div>
+                    <button class="retry-btn" onclick="retryAISummary()">🔄 重试</button>
+                </div>
+            `;
         }
     }
     
@@ -211,11 +235,39 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 displaySEOAdvice(data.advice);
             } else {
-                seoAdviceContent.innerHTML = '<div class="ai-error">SEO建议生成失败</div>';
+                seoAdviceContent.innerHTML = `
+                    <div class="ai-error">
+                        <div>SEO建议生成失败</div>
+                        <button class="retry-btn" onclick="retrySEOAdvice()">🔄 重试</button>
+                    </div>
+                `;
             }
         } catch (error) {
             console.error('SEO建议错误:', error);
-            seoAdviceContent.innerHTML = '<div class="ai-error">SEO建议服务暂时不可用</div>';
+            seoAdviceContent.innerHTML = `
+                <div class="ai-error">
+                    <div>SEO建议服务暂时不可用</div>
+                    <button class="retry-btn" onclick="retrySEOAdvice()">🔄 重试</button>
+                </div>
+            `;
+        }
+    }
+    
+    // 重试AI摘要
+    function retryAISummary() {
+        if (currentContent) {
+            const aiSummaryContent = document.getElementById('aiSummaryContent');
+            aiSummaryContent.innerHTML = '<div class="ai-loading">🤖 正在重新生成AI摘要...</div>';
+            generateAISummary(currentContent);
+        }
+    }
+    
+    // 重试SEO建议
+    function retrySEOAdvice() {
+        if (currentContent) {
+            const seoAdviceContent = document.getElementById('seoAdviceContent');
+            seoAdviceContent.innerHTML = '<div class="ai-loading">🔍 正在重新生成SEO建议...</div>';
+            generateSEOAdvice(currentContent);
         }
     }
     
