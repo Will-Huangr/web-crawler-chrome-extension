@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>网页爬虫API测试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .test-section h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        input {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.online {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕷️ 网页爬虫API测试页面</h1>
+        
+        <div class="test-section">
+            <h2>🔍 服务器状态检查</h2>
+            <p>服务器状态: <span id="serverStatus" class="status offline">检查中...</span></p>
+            <button onclick="checkHealth()">检查服务器健康状态</button>
+            <div id="healthResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🌐 网页爬取测试</h2>
+            <p>
+                <input type="url" id="testUrl" placeholder="输入要测试的网址" value="https://example.com">
+                <button onclick="testCrawl()">开始爬取</button>
+            </p>
+            <button onclick="testCrawl('https://example.com')">测试Example.com</button>
+            <button onclick="testCrawl('https://httpbin.org/html')">测试HTTPBin</button>
+            <button onclick="testCrawl('https://news.ycombinator.com')">测试HackerNews</button>
+            <div id="crawlResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 性能测试</h2>
+            <button onclick="performanceTest()">运行性能测试</button>
+            <div id="performanceResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 测试结果汇总</h2>
+            <div id="summaryResult" class="result">
+点击上方按钮开始测试...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:5000';
+        let testResults = {
+            health: false,
+            crawl: false,
+            performance: false
+        };
+
+        // 页面加载时自动检查服务器状态
+        window.onload = function() {
+            checkHealth();
+        };
+
+        // 检查服务器健康状态
+        async function checkHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            const statusSpan = document.getElementById('serverStatus');
+            
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '正在检查服务器状态...';
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ 服务器正常运行！\n状态码: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`;
+                    statusSpan.className = 'status online';
+                    statusSpan.textContent = '在线';
+                    testResults.health = true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ 服务器连接失败！\n错误: ${error.message}\n\n请确保:\n1. 服务器已启动 (python3 server.py)\n2. 端口5000未被占用\n3. 防火墙未阻止连接`;
+                statusSpan.className = 'status offline';
+                statusSpan.textContent = '离线';
+                testResults.health = false;
+            }
+            
+            updateSummary();
+        }
+
+        // 测试爬取功能
+        async function testCrawl(url) {
+            const testUrl = url || document.getElementById('testUrl').value;
+            const resultDiv = document.getElementById('crawlResult');
+            
+            if (!testUrl) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '请输入有效的网址';
+                return;
+            }
+            
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = `正在爬取: ${testUrl}...`;
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch(`${SERVER_URL}/crawl`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({url: testUrl})
+                });
+                
+                const data = await response.json();
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    let resultText = `✅ 爬取成功！\n耗时: ${duration}ms\n共获取 ${data.content.length} 项内容\n\n前5项内容预览:\n`;
+                    
+                    data.content.slice(0, 5).forEach((item, index) => {
+                        resultText += `${index + 1}. [${item.type}] ${item.text.substring(0, 80)}...\n`;
+                    });
+                    
+                    if (data.content.length > 5) {
+                        resultText += `\n... 还有 ${data.content.length - 5} 项内容`;
+                    }
+                    
+                    resultDiv.textContent = resultText;
+                    testResults.crawl = true;
+                } else {
+                    throw new Error(data.error || '爬取失败');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ 爬取失败！\n错误: ${error.message}`;
+                testResults.crawl = false;
+            }
+            
+            updateSummary();
+        }
+
+        // 性能测试
+        async function performanceTest() {
+            const resultDiv = document.getElementById('performanceResult');
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '正在运行性能测试...';
+            
+            try {
+                const tests = [
+                    { name: '健康检查', url: `${SERVER_URL}/health`, method: 'GET' },
+                    { name: '简单爬取', url: `${SERVER_URL}/crawl`, method: 'POST', body: {url: 'https://example.com'} },
+                    { name: '复杂爬取', url: `${SERVER_URL}/crawl`, method: 'POST', body: {url: 'https://news.ycombinator.com'} }
+                ];
+                
+                let resultText = '性能测试结果:\n\n';
+                
+                for (const test of tests) {
+                    const startTime = Date.now();
+                    const response = await fetch(test.url, {
+                        method: test.method,
+                        headers: test.method === 'POST' ? {'Content-Type': 'application/json'} : {},
+                        body: test.body ? JSON.stringify(test.body) : undefined
+                    });
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+                    
+                    resultText += `${test.name}: ${duration}ms `;
+                    resultText += duration < 1000 ? '✅ 快速' : duration < 3000 ? '⚠️ 较慢' : '❌ 慢';
+                    resultText += '\n';
+                }
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = resultText;
+                testResults.performance = true;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ 性能测试失败！\n错误: ${error.message}`;
+                testResults.performance = false;
+            }
+            
+            updateSummary();
+        }
+
+        // 更新测试结果汇总
+        function updateSummary() {
+            const summaryDiv = document.getElementById('summaryResult');
+            const passed = Object.values(testResults).filter(r => r).length;
+            const total = Object.keys(testResults).length;
+            
+            let summaryText = `测试进度: ${passed}/${total}\n\n`;
+            summaryText += `✅ 服务器健康检查: ${testResults.health ? '通过' : '失败'}\n`;
+            summaryText += `✅ 爬取功能测试: ${testResults.crawl ? '通过' : '失败'}\n`;
+            summaryText += `✅ 性能测试: ${testResults.performance ? '通过' : '失败'}\n\n`;
+            
+            if (passed === total) {
+                summaryText += '🎉 所有测试通过！你的网页爬虫插件已经准备就绪！\n\n接下来可以：\n1. 安装浏览器插件\n2. 部署到生产服务器\n3. 开始使用';
+                summaryDiv.className = 'result success';
+            } else {
+                summaryText += '⚠️ 部分测试未通过，请检查相关问题后重新测试。';
+                summaryDiv.className = 'result error';
+            }
+            
+            summaryDiv.textContent = summaryText;
+        }
+    </script>
+</body>
+</html> 

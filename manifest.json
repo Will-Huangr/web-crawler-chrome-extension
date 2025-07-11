@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "网页爬虫助手",
+  "version": "1.0.0",
+  "description": "快速爬取网页文案内容",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://*/",
+    "https://*/"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "网页爬虫助手"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+} 

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 400px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            font-size: 18px;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* 给第二个按钮添加间距 */
+        button + button {
+            margin-top: 10px;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .result-container {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background: #f8f9fa;
+            display: none;
+        }
+        
+        /* 汇总信息样式 */
+        .summary-section {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .summary-title {
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .summary-text {
+            font-size: 12px;
+            color: #424242;
+            line-height: 1.4;
+        }
+        
+        /* 详细内容区域 */
+        .details-section {
+            margin-top: 10px;
+        }
+        
+        .details-title {
+            font-weight: bold;
+            color: #424242;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        
+        .content-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+        .content-type {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .content-text {
+            line-height: 1.4;
+            color: #333;
+        }
+        .current-url {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        /* AI模块样式 */
+        .ai-section {
+            background: #f3e5f5;
+            border: 1px solid #ce93d8;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .ai-title {
+            font-weight: bold;
+            color: #7b1fa2;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ai-content {
+            font-size: 12px;
+            color: #424242;
+            line-height: 1.5;
+            min-height: 20px;
+        }
+        
+        .ai-loading {
+            color: #9e9e9e;
+            font-style: italic;
+        }
+        
+        .ai-error {
+            color: #d32f2f;
+        }
+        
+        .seo-section {
+            background: #e8f5e8;
+            border: 1px solid #a5d6a7;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .seo-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .seo-content {
+            font-size: 12px;
+            color: #424242;
+            line-height: 1.5;
+        }
+        
+        .seo-item {
+            margin-bottom: 8px;
+            padding: 6px 10px;
+            background: white;
+            border-radius: 3px;
+            border-left: 3px solid #4caf50;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕷️ 网页爬虫助手</h1>
+        
+        <div class="current-url" id="currentUrl"></div>
+        
+        <div class="input-group">
+            <label for="urlInput">目标网址：</label>
+            <input type="url" id="urlInput" placeholder="输入要爬取的网址...">
+        </div>
+        
+        <button id="crawlBtn">开始爬取</button>
+        <button id="crawlCurrentBtn">爬取当前页面</button>
+        
+        <div class="status" id="status"></div>
+        
+        <div class="result-container" id="resultContainer">
+            <!-- 汇总信息区域 -->
+            <div class="summary-section" id="summarySection">
+                <div class="summary-title">📊 内容汇总</div>
+                <div class="summary-stats" id="summaryStats"></div>
+                <div class="summary-text" id="summaryText"></div>
+            </div>
+            
+            <!-- AI智能摘要区域 -->
+            <div class="ai-section" id="aiSummarySection">
+                <div class="ai-title">🤖 AI智能摘要</div>
+                <div class="ai-content" id="aiSummaryContent">
+                    <div class="ai-loading">正在生成智能摘要...</div>
+                </div>
+            </div>
+            
+            <!-- SEO建议区域 -->
+            <div class="seo-section" id="seoAdviceSection">
+                <div class="seo-title">🔍 SEO优化建议</div>
+                <div class="seo-content" id="seoAdviceContent">
+                    <div class="ai-loading">正在分析SEO建议...</div>
+                </div>
+            </div>
+            
+            <!-- 详细内容区域 -->
+            <div class="details-section">
+                <div class="details-title">📋 详细内容</div>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html> 
