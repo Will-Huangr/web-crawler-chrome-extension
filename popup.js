@@ -1,7 +1,7 @@
 // 服务器配置 - 产品经理修改这里就行了！
 // 本地测试用这个：http://localhost:5000
-// 服务器部署后改成：http://你的域名.com
-const SERVER_URL = 'http://115.190.73.243:5000';
+// 服务器部署后改成：http://你的域名.com:5000
+const SERVER_URL = 'http://localhost:5000';
 
 document.addEventListener('DOMContentLoaded', function() {
     const urlInput = document.getElementById('urlInput');

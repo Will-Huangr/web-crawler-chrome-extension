@@ -106,10 +106,17 @@ const SERVER_URL = 'http://your-server-domain.com:5000';
 ### 本地开发
 ```bash
 # 克隆项目
-git clone <项目地址>
+git clone https://github.com/Will-Huangr/web-crawler-chrome-extension.git
+
+# 进入项目目录
+cd web-crawler-chrome-extension
 
 # 安装依赖
 pip install -r requirements.txt
+
+# 配置环境变量
+cp .env.example .env
+# 编辑.env文件，填入你的DeepSeek API密钥
 
 # 运行服务器
 python server.py
@@ -261,5 +268,5 @@ SEO优化建议
 ## 📞 联系方式
 
 如有问题或建议，请通过以下方式联系：
-- 提交Issue
-- 邮件联系 
+- [提交Issue](https://github.com/Will-Huangr/web-crawler-chrome-extension/issues)
+- [查看项目](https://github.com/Will-Huangr/web-crawler-chrome-extension) 
