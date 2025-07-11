@@ -13,6 +13,10 @@
 - **AI智能摘要**：使用DeepSeek Chat模型自动生成内容摘要
 - **SEO优化建议**：基于DeepSeek Reasoner模型提供专业SEO建议
 - **内容汇总**：智能统计和分析爬取的内容
+- **🔄 重试机制**：AI功能失败时可单独重试，无需重新爬取
+- **⚡ 加载状态**：实时显示爬取和AI处理进度
+- **🎨 美观界面**：现代化UI设计，支持响应式布局
+- **🛠️ 错误处理**：友好的错误提示和恢复机制
 - **实时状态**：显示爬取进度和结果状态
 - **跨域支持**：支持爬取任意网站内容
 - **服务器部署**：完整的后端API服务，支持宝塔面板部署
@@ -24,12 +28,16 @@
 │   ├── manifest.json          # 插件配置文件
 │   ├── popup.html            # 插件弹窗界面
 │   ├── popup.js              # 插件主要逻辑
+│   ├── popup.css             # 界面样式文件
 │   ├── content.js            # 内容脚本
 │   └── background.js         # 后台脚本
 ├── 后端服务
 │   ├── server.py             # Flask API服务器
 │   ├── requirements.txt      # Python依赖
 │   └── gunicorn_config.py    # 生产环境配置
+├── 配置文件
+│   ├── .env.example         # 环境变量模板
+│   └── CONFIG.md            # 配置说明文档
 ├── 部署文件
 │   ├── deploy.sh             # 自动部署脚本
 │   ├── baota_deploy.md       # 宝塔部署指南
@@ -92,6 +100,15 @@ const SERVER_URL = 'http://your-server-domain.com:5000';
 1. **爬取当前页面**：点击"爬取当前页面"按钮
 2. **指定URL爬取**：在输入框中输入目标网址，点击"开始爬取"
 3. **查看结果**：爬取完成后，内容会分段显示在结果区域
+4. **AI功能**：
+   - 爬取完成后会自动生成AI摘要和SEO建议
+   - 如果AI功能失败，可点击"🔄 重试"按钮单独重试
+   - 重新爬取时会自动重新请求AI功能
+5. **内容展示**：
+   - 📊 内容汇总：显示统计信息
+   - 🤖 AI智能摘要：自动生成的内容摘要
+   - 🔍 SEO优化建议：专业的SEO建议
+   - 📋 详细内容：按类型分类的完整内容
 
 ## 📊 支持的内容类型
 
@@ -241,7 +258,7 @@ SEO优化建议
 - Flask-CORS 4.0.0
 - requests 2.31.0
 - beautifulsoup4 4.12.2
-- lxml 4.9.3
+- python-dotenv 1.0.0 (环境变量管理)
 
 ### 浏览器支持
 - Chrome 88+
@@ -262,11 +279,30 @@ SEO优化建议
 1. **插件无法加载**：检查manifest.json格式
 2. **无法爬取内容**：确认服务器地址和网络连接
 3. **跨域问题**：检查CORS配置
+4. **AI功能失败**：
+   - 检查DeepSeek API密钥是否正确配置
+   - 确认.env文件格式正确
+   - 检查网络连接和API额度
+   - 使用重试按钮重新尝试
 
 ### 调试方法
 1. 查看浏览器控制台日志
 2. 检查服务器日志
 3. 使用curl测试API接口
+4. 验证环境变量加载：`echo $DEEPSEEK_API_KEY`
+
+### AI功能调试
+```bash
+# 测试AI摘要接口
+curl -X POST http://localhost:5000/ai_summary \
+  -H "Content-Type: application/json" \
+  -d '{"content":[{"type":"页面标题","tag":"title","text":"测试页面"}],"prompt":"请总结这个页面"}'
+
+# 测试SEO建议接口  
+curl -X POST http://localhost:5000/seo_advice \
+  -H "Content-Type: application/json" \
+  -d '{"content":[{"type":"页面标题","tag":"title","text":"测试页面"}],"prompt":"请提供SEO建议"}'
+```
 
 ## 📞 联系方式
 
