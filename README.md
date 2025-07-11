@@ -39,6 +39,22 @@
 ### 1. 环境变量配置
 
 **配置DeepSeek API密钥（AI功能必需）：**
+
+#### 方式1：使用.env文件（推荐）
+```bash
+# 复制模板文件
+cp .env.example .env
+
+# 编辑.env文件，填入你的API密钥
+nano .env
+```
+
+在.env文件中配置：
+```
+DEEPSEEK_API_KEY=sk-your-deepseek-api-key-here
+```
+
+#### 方式2：直接设置环境变量
 ```bash
 export DEEPSEEK_API_KEY="your_deepseek_api_key_here"
 ```

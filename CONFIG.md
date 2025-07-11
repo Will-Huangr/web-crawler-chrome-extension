@@ -20,15 +20,38 @@ export DEEPSEEK_API_KEY="your_deepseek_api_key_here"
 
 ### 3. 配置方式
 
-#### 方式1：直接设置环境变量
+#### 方式1：使用.env文件（推荐）
+1. 复制环境变量模板文件：
 ```bash
-export DEEPSEEK_API_KEY="sk-xxxxxxxxxxxxxxxxxx"
+cp .env.example .env
 ```
 
-#### 方式2：创建.env文件
-在项目根目录创建 `.env` 文件：
+2. 编辑.env文件，填入你的DeepSeek API密钥：
+```bash
+# 编辑.env文件
+nano .env
+# 或者使用其他编辑器
+code .env
 ```
-DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxx
+
+3. 配置内容：
+```
+# DeepSeek API配置
+DEEPSEEK_API_KEY=sk-your-real-deepseek-api-key-here
+
+# 服务配置
+FLASK_ENV=development
+FLASK_DEBUG=True
+```
+
+4. 启动服务：
+```bash
+python server.py
+```
+
+#### 方式2：直接设置环境变量
+```bash
+export DEEPSEEK_API_KEY="sk-xxxxxxxxxxxxxxxxxx"
 ```
 
 #### 方式3：宝塔面板配置
